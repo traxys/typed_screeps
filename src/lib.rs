@@ -50,7 +50,9 @@ pub struct Game;
 
 impl Game {
     pub fn spawns() -> Spawns {
-        Spawns(screeps::Game::spawns())
+        Spawns {
+            inner: screeps::Game::spawns(),
+        }
     }
 
     pub fn time() -> u32 {
@@ -58,17 +60,21 @@ impl Game {
     }
 }
 
-pub struct Spawns(Object);
+pub struct Spawns {
+    pub inner: Object,
+}
 
 impl Spawns {
     pub fn get(&self, name: &str) -> Option<StructureSpawn> {
-        Some(StructureSpawn(
-            Reflect::get(&self.0, &name.into()).ok()?.into(),
-        ))
+        Some(StructureSpawn {
+            inner: Reflect::get(&self.inner, &name.into()).ok()?.into(),
+        })
     }
 }
 
-pub struct StructureSpawn(screeps::objects::StructureSpawn);
+pub struct StructureSpawn {
+    pub inner: screeps::objects::StructureSpawn,
+}
 
 impl StructureSpawn {
     pub fn spawn_creep(
@@ -77,7 +83,7 @@ impl StructureSpawn {
         name: &str,
         options: Option<Object>,
     ) -> Result<(), Error> {
-        let result = self.0.spawn_creep(
+        let result = self.inner.spawn_creep(
             &body.iter().map(|&v| JsValue::from(v)).collect(),
             &name.into(),
             options,
